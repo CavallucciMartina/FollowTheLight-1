@@ -1,100 +1,174 @@
-#include "function.h"
-#define BUTTON0 A0
-#define BUTTON1 A1
-#define BUTTON2 A2
-#define POT     A3
 
-#define LED0    8 /*LED BUTTON 0*/
-#define LED1    9 /*LED BUTTON 1*/
-#define LED2    10 /*LED BUTTON 2*/
-#define LED3    11 /*LED ROSSO X INIT */
+
+#define BUTTON1 2
+#define BUTTON2 3
+#define BUTTON3 4
+#define REDLED 9
+#define GREEN1 10
+#define GREEN2 11
+#define GREEN3 12
+#define MAX_BRIGHTNESS 255
+#define MIN_BRIGHTNESS 0
+#define PULSE_DELAY 10
+
+
+int brightness;
+int fadeAmount;
+int phase;
+int sequence[100];
+int level= 0;
+int your_sequence[100];
 
 void setup() {
 
-  /*Definisco i pin di input dei bottoni e del potenziometro */
-  pinMode(BUTTON0, INPUT);
-  pinMode(BUTTON1, INPUT);
-  pinMode(BUTTON2, INPUT);
-  pinMode(POT, INPUT);
+  digitalWrite(GREEN1, LOW);
+  digitalWrite(GREEN2, LOW);
+  digitalWrite(GREEN3, LOW);
 
-  /*Definisco i pin di output dei led */
-  pinMode(LED0, OUTPUT);
-  pinMode(LED1, OUTPUT);
-  pinMode(LED2, OUTPUT);
-  pinMode(LED3, OUTPUT);
+  pinMode(BUTTON1,INPUT);
+  pinMode(BUTTON2,INPUT);
+  pinMode(BUTTON3,INPUT);
 
-  /*Inizialmente i 3 led sono spenti */
-  digitalWrite(LED0,LOW);
-  digitalWrite(LED1,LOW);
-  digitalWrite(LED2,LOW);
+  pinMode(REDLED, OUTPUT);
+  pinMode(GREEN1, OUTPUT);
+  pinMode(GREEN2, OUTPUT);
+  pinMode(GREEN3, OUTPUT);
 
-  int level = 0; /* variabile extern che abbiamo nel .c */
-  int tempo_imm = velocity_conversion(/*Leggiamo da potenziometro la velocità */);
+  Serial.begin(9600);
+
+  phase = 0;
+  brightness=0;
+  fadeAmount = 5;
+  attachInterrupt(0, change, HIGH);
+  int velocity = 1000;
 
 }
 
 void loop() {
 
-  if(level == 0) {
-    welcome();
-
-    /*Facciamo lampeggiare led 3 */
-
-    generate_sequence(); /*dentro al file .c */
-
+  switch (phase) {
+    case 0:
+      pulseStep();
+      level ++;
+      break;
+      case 1:
+        generate_sequence();
+    showSequence();
+    get_sequence();
+    break;
+    default: break;
   }
-  if(level > 0 && digitalRead(LED3,HIGH))
-  {
-    start(); /*Nel .c */
-    generate_sequence(); /*dentro al file .c */
-   show_sequence();
-   insert_sequence();
-  }
+
+  noInterrupts();
+  int buttonState = digitalRead(BUTTON1);
+  interrupts();
 }
 
+void pulseStep() {
+ analogWrite(REDLED,brightness);
+ brightness +=fadeAmount;
+ if(brightness == MAX_BRIGHTNESS || brightness == MIN_BRIGHTNESS) {
+   fadeAmount = -fadeAmount;
+ }
+ delay(PULSE_DELAY);
+}
+void change(){
+    phase = 1;
+    analogWrite(REDLED,0);
 
 }
-void show_sequence()
+void showSequence()
 {
-  digitalWrite(LED0,LOW);
-  digitalWrite(LED1,LOW);
-  digitalWrite(LED2,LOW)
-  /*IN base alla sequenza accendo o spengo i led giusti */
+
+  digitalWrite(REDLED, LOW);
+  digitalWrite(GREEN1, LOW);
+  digitalWrite(GREEN2, LOW);
+  digitalWrite(GREEN3, LOW);
+  for (int i = 0; i < level ;i++)
+  {
+    digitalWrite(sequence[i],HIGH);
+    delay(20);
+    digitalWrite(sequence[i], LOW);
+    delay(20);
+  }
+}
+void generate_sequence()
+{
+  randomSeed(millis()); //in this way is really random!!!
+
   for (int i = 0; i < level; i++)
   {
-    digitalWrite(sequence[i], HIGH);
-    delay(velocity);
-    digitalWrite(sequence[i], LOW);
-    delay(tempo_imm);
+      sequence[i] = random(GREEN1,GREEN3);
   }
+  Serial.println(sequence[0]);
+}
+void get_sequence()
+{
+  int flag = 0; //this flag indicates if the sequence is correct
+  Serial.println(level);
+  for (int i = 0; i < level; i++)
+  {
+    flag = 0;
+    while(flag == 0)
+    {
+        if (digitalRead(BUTTON1) == HIGH)
+        {
+          digitalWrite(GREEN1, HIGH);
+          flag = 1;
+          if (GREEN1 != sequence[i])
+          {
+            wrong_sequence();
+            return;
+           }
+           digitalWrite(GREEN1, LOW);
+         }
+
+         /*if (digitalRead(BUTTON2) == HIGH)
+         {
+            digitalWrite(GREEN2, HIGH);
+
+            flag = 1;
+
+          if (GREEN2 != sequence[i])
+          {
+             wrong_sequence();
+            return;
+          }
+          digitalWrite(GREEN2, LOW);
+         }
+
+          if (digitalRead(BUTTON3) == HIGH)
+          {
+              digitalWrite(GREEN3, HIGH);
+             ;
+             flag = 1;
+
+          if (GREEN3 != sequence[i])
+          {
+             wrong_sequence();
+            return;
+          }
+          digitalWrite(GREEN3 LOW);
+          }
+
+      }*/
+}
+right_sequence();
+}
+
+}
+void right_sequence()
+{
+
+  Serial.println("  hai vinto!");
+    if (level < 100);
+    level++;
 
 }
 
+void wrong_sequence()
+{
+Serial.println("  hai perso!");
+phase=0;
 
-
-
-
-void insert_sequence(){
-  int flag = 0;
-  for (int i = 0; i< level ; i++){
-    flag = 0;
-
-    if(digitalRead(BUTTON0) == LOW){
-      /*Controllo se il bottone 0 non è stato premuto */
-      digitalWrite(LED0,HIGH);
-      current_sequence[i]=LED0;
-      flag=1;
-      if(current_sequence[i] != sequence[i]){
-        wrong_sequence();
-        return;
-      }
-      digitalWrite(LED0,LOW);
-    }
-
-    /*Reiterare per altri due bottoni */
-
-
-
-    }
-  }
 }
