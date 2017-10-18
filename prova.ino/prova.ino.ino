@@ -6,33 +6,33 @@
 #define GREEN1 10
 #define GREEN2 11
 #define GREEN3 12
-#define POTENZIOMETRO A0
+#define POTENTIOMETER A0
 #define MAX_BRIGHTNESS 255
 #define MIN_BRIGHTNESS 0
 #define PULSE_DELAY 50
 #define MAX_LEVEL 100
 
 int brightness;
-int fadeAmount;
+int fade_amount;
 int phase;
 int sequence[MAX_LEVEL];
 int level;
 int flag;
-bool gameOver;
+bool game_over;
 int score;
 int velocity;
 
 long Timer = 5000;
-void setup() {
-
+void setup()
+{
   pinMode(REDLED, OUTPUT);
   pinMode(GREEN1, OUTPUT);
   pinMode(GREEN2, OUTPUT);
   pinMode(GREEN3, OUTPUT);
 
-  turnLedsOff();
+  turn_leds_off();
 
-  pinMode(POTENZIOMETRO, INPUT);
+  pinMode(POTENTIOMETER, INPUT);
   pinMode(BUTTON1,INPUT);
   pinMode(BUTTON2,INPUT);
   pinMode(BUTTON3,INPUT);
@@ -40,54 +40,58 @@ void setup() {
   Serial.begin(9600);
 
   phase = 0;
-  brightness=0;
-  fadeAmount = 5;
+  brightness = 0;
+  fade_amount = 5;
   level = 0;
   score=0;
-
-  attachInterrupt(digitalPinToInterrupt(2), change, HIGH);
   velocity = 1;
-
+  
+  attachInterrupt(digitalPinToInterrupt(2), change, HIGH);
   Serial.println("Welcome to Follow the Light!");
 }
 
 void loop() {
-
-  switch (phase) {
-    case 0:
+  switch (phase)
+  {
+    case 0:                 /*Waiting phase*/
       pulseStep();
       break;
-    case 1:
+    case 1:                 /*Gaming phase*/
       generate_sequence();
-      showSequence();
+      show_sequence();
       get_sequence();
       break;
     default: break;
   }
-
 }
 
-void pulseStep() {
-
- analogWrite(REDLED,brightness);
- brightness +=fadeAmount;
- if(brightness == MAX_BRIGHTNESS || brightness == MIN_BRIGHTNESS) {
-   fadeAmount = -fadeAmount;
+/*REDLED is pulsing*/
+void pulseStep()
+{
+ analogWrite(REDLED, brightness);
+ brightness += fade_amount;
+ if(brightness == MAX_BRIGHTNESS || brightness == MIN_BRIGHTNESS)
+ {
+   fade_amount =- fade_amount;
  }
  delay(PULSE_DELAY);
 }
-void change(){
+
+/*Changeing phase from waiting to gaming*/
+void change()
+{
     detachInterrupt(digitalPinToInterrupt(2));
     phase = 1;
     analogWrite(REDLED,0);
-    gameOver=false;
-    velocity=map(analogRead(POTENZIOMETRO),0,1023,1,10);
+    game_over = false;
+    velocity = map(analogRead(POTENTIOMETER),0,1023,1,10);
     Serial.println("Ready!");
     delay(500);
 }
-void showSequence()
-{
 
+/*Show the sequence turning on and off the three green leds*/
+void show_sequence()
+{
   digitalWrite(REDLED, LOW);
   digitalWrite(GREEN1, LOW);
   digitalWrite(GREEN2, LOW);
@@ -100,22 +104,27 @@ void showSequence()
     delay(500/velocity);
   }
 }
+
+/*Generate the sequence adding for each new level the last number*/
 void generate_sequence()
 {
-  if(level<MAX_LEVEL){
+  if(level < MAX_LEVEL){
   randomSeed(analogRead(0)); //in this way is really random!!!
-  int numero_sequenza=(int)random(10,13);
+  int numero_sequenza = (int)random(10,13);
   sequence[level] = numero_sequenza;
   level++;
-  } else{
+  } else
+  {
     you_win();
   }
 }
+
+/*Ask the player to push the right button to guess the sequence*/
 void get_sequence()
 {
   flag = 0; //this flag indicates if the sequence is correct
   bool waiting = false;
-  unsigned long initialTime = millis();
+  unsigned long initial_time = millis();
 
   //Timer1.initialize(Timer*level);
   //Timer1.attachInterrupt(wrong_sequence);
@@ -126,40 +135,46 @@ void get_sequence()
     while(flag == 0)
     {
       if (digitalRead(BUTTON1) == HIGH) {
-        if (ledGuess(GREEN1, i) == false) {
+        if (led_guess(GREEN1, i) == false) {
           return;
         }
-         waiting=true;
+        waiting = true;
       }
       if (digitalRead(BUTTON2) == HIGH) {
-        if (ledGuess(GREEN2, i) == false) {
+        if (led_guess(GREEN2, i) == false) {
           return;
         }
-         waiting=true;
+        waiting=true;
       }
-      if (digitalRead(BUTTON3) == HIGH) {
-        if (ledGuess(GREEN3, i) == false) {
+      if (digitalRead(BUTTON3) == HIGH)
+      {
+        if (led_guess(GREEN3, i) == false)
+        {
           return;
         }
-         waiting=true;
+        waiting = true;
       }
-      if(waiting){
+      if(waiting)
+      {
         delay(500);
-         waiting=false;
+         waiting = false;
       }
-      if (millis()-initialTime >= Timer*level) {
+      if (millis() - initial_time >= Timer * level)
+      {
         wrong_sequence();
         return;
       }
     }
   }
-  if(gameOver){
+  if(game_over)
+  {
     return;
   }
   right_sequence();
 }
 
-bool ledGuess(int led, int i)
+/*Check if the player has pushed the right button*/
+bool led_guess(int led, int i)
 {
   digitalWrite(led, HIGH);
   flag = 1;
@@ -172,49 +187,50 @@ bool ledGuess(int led, int i)
    return true;
 }
 
+/*The level is incremented*/
 void right_sequence()
 {
-  score+=level;
-
+  score += level;
 }
 
+/*End of the game with a depressing sentence. Waiting phase*/
 void wrong_sequence()
 {
-  Serial.print("Game over!-Score: ");
-  Serial.println(score*velocity);
-  score=0;
-  phase=0;
-  gameOver=true;
-  level=0;
-  turnLedsOff();
+  Serial.print("Game over, you lost at a very simple game!-Score: ");
+  Serial.println(score * velocity);
+  score = 0;
+  phase = 0;
+  game_over = true;
+  level = 0;
+  turn_leds_off();
   analogWrite(REDLED, 255);
   delay(500);
   analogWrite(REDLED, 0);
-
-  EIFR=0x01;
+  EIFR = 0x01;
   attachInterrupt(digitalPinToInterrupt(2), change, HIGH);
 
 }
 
+/*End of the game with a nice sentence. Waiting phase*/
 void you_win()
 {
-  Serial.print("You win!-Score: ");
+  Serial.print("You win, nobody has a good memory like yours!-Score: ");
   Serial.println(score*velocity);
-  score=0;
-  phase=0;
-  gameOver=true;
-  level=0;
-  turnLedsOff();
+  score = 0;
+  phase = 0;
+  game_over = true;
+  level = 0;
+  turn_leds_off();
   analogWrite(REDLED, 255);
   delay(500);
   analogWrite(REDLED, 0);
-
-  EIFR=0x01;
+  EIFR = 0x01;
   attachInterrupt(digitalPinToInterrupt(2), change, HIGH);
-
 }
 
-void turnLedsOff() {
+/*Obviusly turns the leds off*/
+void turn_leds_off()
+{
   digitalWrite(GREEN1, LOW);
   digitalWrite(GREEN2, LOW);
   digitalWrite(GREEN3, LOW);
