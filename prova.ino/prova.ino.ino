@@ -10,7 +10,7 @@
 #define MAX_BRIGHTNESS 255
 #define MIN_BRIGHTNESS 0
 #define PULSE_DELAY 50
-#define MAX_LEVEL 5
+#define MAX_LEVEL 100
 
 int brightness;
 int fadeAmount;
@@ -82,10 +82,7 @@ void change(){
     analogWrite(REDLED,0);
     gameOver=false;
     velocity=map(analogRead(POTENZIOMETRO),0,1023,1,10);
-    Serial.println("Game started!\nVelocità impostata: ");
-    Serial.print(velocity);
-    Serial.print("   Valore potenziometro: ");
-    Serial.println(analogRead(POTENZIOMETRO));
+    Serial.println("Ready!");
     delay(500);
 }
 void showSequence()
@@ -95,25 +92,19 @@ void showSequence()
   digitalWrite(GREEN1, LOW);
   digitalWrite(GREEN2, LOW);
   digitalWrite(GREEN3, LOW);
-  Serial.print("Mostra sequenza: ");
   for (int i = 0; i < level ;i++)
   {
-    Serial.print(sequence[i]);
-    Serial.print(" ");
     digitalWrite(sequence[i],HIGH);
     delay(500/velocity);
     digitalWrite(sequence[i], LOW);
     delay(500/velocity);
   }
-  Serial.println();
 }
 void generate_sequence()
 {
   if(level<MAX_LEVEL){
-  Serial.print("Genera sequenza: ");
   randomSeed(analogRead(0)); //in this way is really random!!!
   int numero_sequenza=(int)random(10,13);
-  Serial.println(numero_sequenza);
   sequence[level] = numero_sequenza;
   level++;
   } else{
@@ -124,10 +115,6 @@ void get_sequence()
 {
   flag = 0; //this flag indicates if the sequence is correct
   bool waiting = false;
-  Serial.print("Livello: ");
-  Serial.println(level);
-
-
   unsigned long initialTime = millis();
 
   //Timer1.initialize(Timer*level);
@@ -187,15 +174,13 @@ bool ledGuess(int led, int i)
 
 void right_sequence()
 {
-
-  Serial.println("Sequenza indovinata\nProssima sequenza in arrivo...\n");
   score+=level;
 
 }
 
 void wrong_sequence()
 {
-  Serial.print("Hai perso!\nIl tuo punteggio finale è: ");
+  Serial.print("Game over!-Score: ");
   Serial.println(score*velocity);
   score=0;
   phase=0;
@@ -213,7 +198,7 @@ void wrong_sequence()
 
 void you_win()
 {
-  Serial.print("Hai vinto!\nIl tuo punteggio finale è: ");
+  Serial.print("You win!-Score: ");
   Serial.println(score*velocity);
   score=0;
   phase=0;
@@ -233,5 +218,4 @@ void turnLedsOff() {
   digitalWrite(GREEN1, LOW);
   digitalWrite(GREEN2, LOW);
   digitalWrite(GREEN3, LOW);
-
 }
