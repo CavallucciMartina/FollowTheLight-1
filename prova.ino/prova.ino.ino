@@ -109,7 +109,7 @@ void show_sequence()
 void generate_sequence()
 {
   if(level < MAX_LEVEL){
-  randomSeed(analogRead(0)); //in this way is really random!!!
+  randomSeed(millis()); //in this way is really random!!!
   int numero_sequenza = (int)random(10,13);
   sequence[level] = numero_sequenza;
   level++;
