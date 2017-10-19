@@ -20,18 +20,20 @@ int sequence[MAX_LEVEL];
 int level;
 bool game_over;
 int score;
-int velocity;
+int speed;
 int wrongSequenceFlag;
 
+//Time to complete the level, it should be multiplied by level to have more time for longer levels
+long gameOverTimer = 5000;
 
-long Timer = 5000;
 void setup()
 {
+  //Pin mode
   pinMode(REDLED, OUTPUT);
   pinMode(GREEN1, OUTPUT);
   pinMode(GREEN2, OUTPUT);
   pinMode(GREEN3, OUTPUT);
-
+  
   turn_leds_off();
 
   pinMode(POTENTIOMETER, INPUT);
@@ -46,9 +48,9 @@ void setup()
   fade_amount = 5;
   level = 0;
   score=0;
-  velocity = 1;
+  speed = 1;
   
-  attachInterrupt(digitalPinToInterrupt(2), change, HIGH);
+  attachInterrupt(digitalPinToInterrupt(BUTTON1), startGame, HIGH);
   Serial.println("Welcome to Follow the Light!");
 }
 
@@ -79,18 +81,14 @@ void pulseStep()
  delay(PULSE_DELAY);
 }
 
-/*Changeing phase from waiting to gaming*/
-void change()
+/*Start game, going from waiting phase to game phase*/
+void startGame()
 {
-    detachInterrupt(digitalPinToInterrupt(2));
+    detachInterrupt(digitalPinToInterrupt(BUTTON1));
     phase = 1;
     analogWrite(REDLED,0);
     game_over = false;
-    velocity = map(analogRead(POTENTIOMETER),0,1023,1,10);
-    Serial.print("Speed: ");
-    Serial.print(velocity);
-    Serial.print(" ");
-    Serial.println(analogRead(POTENTIOMETER));
+    speed = map(analogRead(POTENTIOMETER),0,1023,1,10);
     Serial.println("Ready!");
     delay(500);
 }
@@ -105,9 +103,9 @@ void show_sequence()
   for (int i = 0; i < level ;i++)
   {
     digitalWrite(sequence[i],HIGH);
-    delay(500/velocity);
+    delay(500/speed);
     digitalWrite(sequence[i], LOW);
-    delay(500/velocity);
+    delay(500/speed);
   }
 }
 
@@ -131,9 +129,6 @@ void get_sequence()
   wrongSequenceFlag = 0;
   bool waiting = false;
   unsigned long initial_time = millis();
-
-  //Timer1.initialize(Timer*level);
-  //Timer1.attachInterrupt(wrong_sequence);
 
   for (int i = 0; i < level; i++)
   {
@@ -165,7 +160,7 @@ void get_sequence()
         delay(500);
          waiting = false;
       }
-      if (millis() - initial_time >= Timer * level)
+      if (millis() - initial_time >= gameOverTimer * level)
       {
         wrong_sequence();
         return;
@@ -203,7 +198,7 @@ void right_sequence()
 void wrong_sequence()
 {
   Serial.print("Game over, you lost at a very simple game!-Score: ");
-  Serial.println(score * velocity);
+  Serial.println(score * speed);
   score = 0;
   phase = 0;
   game_over = true;
@@ -213,7 +208,7 @@ void wrong_sequence()
   delay(500);
   analogWrite(REDLED, 0);
   EIFR = 0x01;
-  attachInterrupt(digitalPinToInterrupt(2), change, HIGH);
+  attachInterrupt(digitalPinToInterrupt(BUTTON1), startGame, HIGH);
 
 }
 
@@ -221,7 +216,7 @@ void wrong_sequence()
 void you_win()
 {
   Serial.print("You win, nobody has a good memory like yours!-Score: ");
-  Serial.println(score*velocity);
+  Serial.println(score*speed);
   score = 0;
   phase = 0;
   game_over = true;
@@ -231,7 +226,7 @@ void you_win()
   delay(500);
   analogWrite(REDLED, 0);
   EIFR = 0x01;
-  attachInterrupt(digitalPinToInterrupt(2), change, HIGH);
+  attachInterrupt(digitalPinToInterrupt(BUTTON1), startGame, HIGH);
 }
 
 /*Obviusly turns the leds off*/
