@@ -10,6 +10,7 @@
 #define MIN_BRIGHTNESS 0
 #define PULSE_DELAY 50
 #define MAX_LEVEL 5
+#define NUMBER_OF_LEDS 3
 
 /*Red led's information*/
 int brightness;
@@ -135,27 +136,15 @@ void get_sequence()
     wrongSequenceFlag = 0; //TODO: togliere?
     while(wrongSequenceFlag == 0)
     {
-      if (digitalRead(BUTTON1) == HIGH) {
-        if (led_guess(GREEN1, i) == false) {
-          return;
+      for(int j = 0; j < NUMBER_OF_LEDS; j++) {   
+        if (digitalRead(BUTTON1 + j) == HIGH) {
+          if (led_guess(GREEN1 + j, i) == false) {
+            return;
+          }
+          waiting = true;
         }
-        waiting = true;
-      }
-      if (digitalRead(BUTTON2) == HIGH) {
-        if (led_guess(GREEN2, i) == false) {
-          return;
-        }
-        waiting=true;
-      }
-      if (digitalRead(BUTTON3) == HIGH)
-      {
-        if (led_guess(GREEN3, i) == false)
-        {
-          return;
-        }
-        waiting = true;
-      }
-      if(waiting)
+    }
+    if(waiting)
       {
         delay(500);
          waiting = false;
