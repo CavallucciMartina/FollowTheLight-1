@@ -23,9 +23,14 @@ bool game_over;
 int score;
 int game_speed;
 int wrong_sequence_flag;
+int base_speed;
 
 //Time to complete the level, it should be multiplied by level to have more time for longer levels
 long game_over_timer = 5000;
+
+int dt_gameover = 2000;
+int start_delay = 1000;
+int anti_bouncing_delay = 250;
 
 void setup()
 {
@@ -50,6 +55,7 @@ void setup()
   level = 0;
   score=0;
   game_speed = 1;
+  base_speed = 500;
   
   attachInterrupt(digitalPinToInterrupt(BUTTON1), startGame, HIGH);
   Serial.println("Welcome to Follow the Light!");
@@ -91,7 +97,7 @@ void startGame()
     game_over = false;
     game_speed = map(analogRead(POTENTIOMETER),0,1023,1,10);
     Serial.println("Ready!");
-    delay(500);
+    delay(start_delay);
 }
 
 /*Show the sequence turning on and off the three green leds*/
@@ -104,9 +110,9 @@ void show_sequence()
   for (int i = 0; i < level ;i++)
   {
     digitalWrite(sequence[i],HIGH);
-    delay(500/game_speed);
+    delay(base_speed/game_speed);
     digitalWrite(sequence[i], LOW);
-    delay(500/game_speed);
+    delay(base_speed/game_speed);
   }
 }
 
@@ -115,7 +121,7 @@ void generate_sequence()
 {
   if(level < MAX_LEVEL){
   randomSeed(analogRead(A1)); //in this way is really random!!!
-  int numero_sequenza = (int)random(10,13);
+  int numero_sequenza = (int)random(GREEN1,GREEN3+1);
   sequence[level] = numero_sequenza;
   level++;
   } else
@@ -146,8 +152,8 @@ void get_sequence()
     }
     if(waiting)
       {
-        delay(500);
-         waiting = false;
+        delay(anti_bouncing_delay);
+        waiting = false;
       }
       if (millis() - initial_time >= game_over_timer * level)
       {
@@ -193,9 +199,9 @@ void wrong_sequence()
   game_over = true;
   level = 0;
   turn_leds_off();
-  analogWrite(REDLED, 255);
-  delay(500);
-  analogWrite(REDLED, 0);
+  analogWrite(REDLED, MAX_BRIGHTNESS);
+  delay(dt_gameover);
+  analogWrite(REDLED, MIN_BRIGHTNESS);
   EIFR = 0x01;
   attachInterrupt(digitalPinToInterrupt(BUTTON1), startGame, HIGH);
 
@@ -211,9 +217,9 @@ void you_win()
   game_over = true;
   level = 0;
   turn_leds_off();
-  analogWrite(REDLED, 255);
-  delay(500);
-  analogWrite(REDLED, 0);
+  analogWrite(REDLED, MAX_BRIGHTNESS);
+  delay(base_speed);
+  analogWrite(REDLED, MIN_BRIGHTNESS);
   EIFR = 0x01;
   attachInterrupt(digitalPinToInterrupt(BUTTON1), startGame, HIGH);
 }
