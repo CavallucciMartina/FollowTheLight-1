@@ -1,4 +1,3 @@
-#include "TimerOne.h"
 #define BUTTON1 2
 #define BUTTON2 3
 #define BUTTON3 4
@@ -10,17 +9,20 @@
 #define MAX_BRIGHTNESS 255
 #define MIN_BRIGHTNESS 0
 #define PULSE_DELAY 50
-#define MAX_LEVEL 100
+#define MAX_LEVEL 5
 
+/*Red led's information*/
 int brightness;
 int fade_amount;
+/*Game information*/
 int phase;
 int sequence[MAX_LEVEL];
 int level;
-int flag;
 bool game_over;
 int score;
 int velocity;
+int wrongSequenceFlag;
+
 
 long Timer = 5000;
 void setup()
@@ -85,6 +87,10 @@ void change()
     analogWrite(REDLED,0);
     game_over = false;
     velocity = map(analogRead(POTENTIOMETER),0,1023,1,10);
+    Serial.print("Speed: ");
+    Serial.print(velocity);
+    Serial.print(" ");
+    Serial.println(analogRead(POTENTIOMETER));
     Serial.println("Ready!");
     delay(500);
 }
@@ -109,7 +115,7 @@ void show_sequence()
 void generate_sequence()
 {
   if(level < MAX_LEVEL){
-  randomSeed(millis()); //in this way is really random!!!
+  randomSeed(analogRead(A1)); //in this way is really random!!!
   int numero_sequenza = (int)random(10,13);
   sequence[level] = numero_sequenza;
   level++;
@@ -122,7 +128,7 @@ void generate_sequence()
 /*Ask the player to push the right button to guess the sequence*/
 void get_sequence()
 {
-  flag = 0; //this flag indicates if the sequence is correct
+  wrongSequenceFlag = 0;
   bool waiting = false;
   unsigned long initial_time = millis();
 
@@ -131,8 +137,8 @@ void get_sequence()
 
   for (int i = 0; i < level; i++)
   {
-    flag = 0; //TODO: togliere?
-    while(flag == 0)
+    wrongSequenceFlag = 0; //TODO: togliere?
+    while(wrongSequenceFlag == 0)
     {
       if (digitalRead(BUTTON1) == HIGH) {
         if (led_guess(GREEN1, i) == false) {
@@ -177,7 +183,7 @@ void get_sequence()
 bool led_guess(int led, int i)
 {
   digitalWrite(led, HIGH);
-  flag = 1;
+  wrongSequenceFlag = 1;
   if (led != sequence[i])
   {
     wrong_sequence();
