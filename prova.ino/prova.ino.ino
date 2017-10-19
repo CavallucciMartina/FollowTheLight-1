@@ -21,11 +21,11 @@ int sequence[MAX_LEVEL];
 int level;
 bool game_over;
 int score;
-int speed;
-int wrongSequenceFlag;
+int game_speed;
+int wrong_sequence_flag;
 
 //Time to complete the level, it should be multiplied by level to have more time for longer levels
-long gameOverTimer = 5000;
+long game_over_timer = 5000;
 
 void setup()
 {
@@ -49,7 +49,7 @@ void setup()
   fade_amount = 5;
   level = 0;
   score=0;
-  speed = 1;
+  game_speed = 1;
   
   attachInterrupt(digitalPinToInterrupt(BUTTON1), startGame, HIGH);
   Serial.println("Welcome to Follow the Light!");
@@ -89,7 +89,7 @@ void startGame()
     phase = 1;
     analogWrite(REDLED,0);
     game_over = false;
-    speed = map(analogRead(POTENTIOMETER),0,1023,1,10);
+    game_speed = map(analogRead(POTENTIOMETER),0,1023,1,10);
     Serial.println("Ready!");
     delay(500);
 }
@@ -104,9 +104,9 @@ void show_sequence()
   for (int i = 0; i < level ;i++)
   {
     digitalWrite(sequence[i],HIGH);
-    delay(500/speed);
+    delay(500/game_speed);
     digitalWrite(sequence[i], LOW);
-    delay(500/speed);
+    delay(500/game_speed);
   }
 }
 
@@ -127,14 +127,14 @@ void generate_sequence()
 /*Ask the player to push the right button to guess the sequence*/
 void get_sequence()
 {
-  wrongSequenceFlag = 0;
+  wrong_sequence_flag = 0;
   bool waiting = false;
   unsigned long initial_time = millis();
 
   for (int i = 0; i < level; i++)
   {
-    wrongSequenceFlag = 0; //TODO: togliere?
-    while(wrongSequenceFlag == 0)
+    wrong_sequence_flag = 0; //TODO: togliere?
+    while(wrong_sequence_flag == 0)
     {
       for(int j = 0; j < NUMBER_OF_LEDS; j++) {   
         if (digitalRead(BUTTON1 + j) == HIGH) {
@@ -149,7 +149,7 @@ void get_sequence()
         delay(500);
          waiting = false;
       }
-      if (millis() - initial_time >= gameOverTimer * level)
+      if (millis() - initial_time >= game_over_timer * level)
       {
         wrong_sequence();
         return;
@@ -167,7 +167,7 @@ void get_sequence()
 bool led_guess(int led, int i)
 {
   digitalWrite(led, HIGH);
-  wrongSequenceFlag = 1;
+  wrong_sequence_flag = 1;
   if (led != sequence[i])
   {
     wrong_sequence();
@@ -187,7 +187,7 @@ void right_sequence()
 void wrong_sequence()
 {
   Serial.print("Game over, you lost at a very simple game!-Score: ");
-  Serial.println(score * speed);
+  Serial.println(score * game_speed);
   score = 0;
   phase = 0;
   game_over = true;
@@ -205,7 +205,7 @@ void wrong_sequence()
 void you_win()
 {
   Serial.print("You win, nobody has a good memory like yours!-Score: ");
-  Serial.println(score*speed);
+  Serial.println(score*game_speed);
   score = 0;
   phase = 0;
   game_over = true;
