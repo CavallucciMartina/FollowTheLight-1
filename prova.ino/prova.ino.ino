@@ -194,17 +194,7 @@ void wrong_sequence()
 {
   Serial.print("Game over, you lost at a very simple game!-Score: ");
   Serial.println(score * game_speed);
-  score = 0;
-  phase = 0;
-  game_over = true;
-  level = 0;
-  turn_leds_off();
-  analogWrite(REDLED, MAX_BRIGHTNESS);
-  delay(dt_gameover);
-  analogWrite(REDLED, MIN_BRIGHTNESS);
-  EIFR = 0x01;
-  attachInterrupt(digitalPinToInterrupt(BUTTON1), startGame, HIGH);
-
+  reset_game();
 }
 
 /*End of the game with a nice sentence. Waiting phase*/
@@ -212,13 +202,28 @@ void you_win()
 {
   Serial.print("You win, nobody has a good memory like yours!-Score: ");
   Serial.println(score*game_speed);
+  turn_leds_off();
+  analogWrite(REDLED, MAX_BRIGHTNESS);
+  digitalWrite(GREEN1, HIGH);
+  delay(base_speed);
+  digitalWrite(GREEN2, HIGH);
+  delay(base_speed);
+  digitalWrite(GREEN3, HIGH);
+  delay(base_speed);
+  reset_game();
+  
+}
+
+/*Enables the game to be restarted*/
+void reset_game()
+{
   score = 0;
   phase = 0;
   game_over = true;
   level = 0;
   turn_leds_off();
   analogWrite(REDLED, MAX_BRIGHTNESS);
-  delay(base_speed);
+  delay(dt_gameover);
   analogWrite(REDLED, MIN_BRIGHTNESS);
   EIFR = 0x01;
   attachInterrupt(digitalPinToInterrupt(BUTTON1), startGame, HIGH);
