@@ -63,4 +63,7 @@ void reset_game();
 /*Obviusly turns the leds off*/
 void turn_leds_off();
 
+/*Turns on the three leds, with a delay in-between*/
+void win_animation();
+
 #endif

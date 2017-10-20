@@ -59,8 +59,7 @@ void init_variables() {
   game_over_timer = 5000;
   dt_gameover = 2000;
   start_delay = 1000;
-  anti_bouncing_delay = 250;
-
+  anti_bouncing_delay = 200;
 }
 
 /*REDLED is pulsing*/
@@ -91,9 +90,7 @@ void start_game()
 void show_sequence()
 {
   digitalWrite(REDLED, LOW);
-  digitalWrite(GREEN1, LOW);
-  digitalWrite(GREEN2, LOW);
-  digitalWrite(GREEN3, LOW);
+  turn_leds_off();
   for (int i = 0; i < level ;i++)
   {
     digitalWrite(sequence[i],HIGH);
@@ -120,7 +117,6 @@ void generate_sequence()
 /*Ask the player to push the right button to guess the sequence*/
 void get_sequence()
 {
-  wrong_sequence_flag = 0;
   bool waiting = false;
   unsigned long initial_time = millis();
 
@@ -139,6 +135,7 @@ void get_sequence()
           }
         }
       }
+      //Check if time is over
       if (millis() - initial_time >= game_over_timer / (game_speed/2) * level)
       {
           wrong_sequence();
@@ -188,14 +185,8 @@ void you_win()
   Serial.println(score*game_speed);
   turn_leds_off();
   analogWrite(REDLED, MAX_BRIGHTNESS);
-  digitalWrite(GREEN1, HIGH);
-  delay(base_speed);
-  digitalWrite(GREEN2, HIGH);
-  delay(base_speed);
-  digitalWrite(GREEN3, HIGH);
-  delay(base_speed);
+  win_animation();
   reset_game();
-
 }
 
 /*Enables the game to be restarted by pressing the first button*/
@@ -211,6 +202,15 @@ void reset_game()
   analogWrite(REDLED, MIN_BRIGHTNESS);
   EIFR = 0x01;
   attachInterrupt(digitalPinToInterrupt(BUTTON1), start_game, HIGH);
+}
+
+void win_animation() {
+  digitalWrite(GREEN1, HIGH);
+  delay(base_speed);
+  digitalWrite(GREEN2, HIGH);
+  delay(base_speed);
+  digitalWrite(GREEN3, HIGH);
+  delay(base_speed);
 }
 
 /*Turns green leds off*/
