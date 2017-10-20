@@ -37,7 +37,7 @@ void init_hardware() {
   pinMode(GREEN1, OUTPUT);
   pinMode(GREEN2, OUTPUT);
   pinMode(GREEN3, OUTPUT);
-  
+
   turn_leds_off();
 
   pinMode(POTENTIOMETER, INPUT);
@@ -60,7 +60,7 @@ void init_variables() {
   dt_gameover = 2000;
   start_delay = 1000;
   anti_bouncing_delay = 250;
-  
+
 }
 
 /*REDLED is pulsing*/
@@ -184,7 +184,7 @@ void wrong_sequence()
 /*End of the game. Waiting phase*/
 void you_win()
 {
-  Serial.print("You win, nobody has a good memory like yours!-Score: ");
+  Serial.print("You win!-Score: ");
   Serial.println(score*game_speed);
   turn_leds_off();
   analogWrite(REDLED, MAX_BRIGHTNESS);
