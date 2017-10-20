@@ -225,6 +225,6 @@ void turn_leds_off()
 
 void change_fade_amount() {
   game_speed = map(analogRead(POTENTIOMETER),0,1023,1,10);
-  pulse_delay = 50 / game_speed;
+  pulse_delay = base_speed / game_speed / 51;
 }
 
