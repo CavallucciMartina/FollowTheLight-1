@@ -19,8 +19,18 @@ int dt_gameover;
 int start_delay;
 int anti_bouncing_delay;
 
+/*Used to avoid phase being a global variable*/
+int get_phase() {
+  return phase;
+}
+
+/*Used to avoid phase being a global variable*/
+void set_phase(int new_phase) {
+  phase = new_phase;
+}
+
 void init_variables() {
-  phase = 0;
+  set_phase(0);
   brightness = 0;
   fade_amount = 5;
   level = 0;
@@ -51,7 +61,7 @@ void pulse_step()
 void start_game()
 {
     detachInterrupt(digitalPinToInterrupt(BUTTON1));
-    phase = 1;
+    set_phase(1);
     analogWrite(REDLED,0);
     game_over = false;
     game_speed = map(analogRead(POTENTIOMETER),0,1023,1,10);
@@ -177,7 +187,7 @@ void you_win()
 void reset_game()
 {
   score = 0;
-  phase = 0;
+  set_phase(0);
   game_over = true;
   level = 0;
   turn_leds_off();

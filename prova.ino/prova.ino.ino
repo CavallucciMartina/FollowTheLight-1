@@ -24,7 +24,7 @@ void setup()
 }
 
 void loop() {
-  switch (phase)
+  switch (get_phase())
   {
     case 0:                 /*Waiting phase*/
       pulse_step();

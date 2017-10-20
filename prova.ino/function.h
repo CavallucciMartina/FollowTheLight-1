@@ -18,8 +18,9 @@
 
 #include "Arduino.h"
 
-/*Game information*/
-extern int phase;
+int get_phase();
+
+void set_phase(int new_phase);
 
 /*Initialization of game variables*/
 void init_variables();
