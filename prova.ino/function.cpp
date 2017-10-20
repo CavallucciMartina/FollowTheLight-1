@@ -15,7 +15,9 @@ int base_speed;
 //Time to complete the level, it should be multiplied by level to have more time for longer levels
 long game_over_timer;
 
+/*Time before restarting*/
 int dt_gameover;
+/*Delay after pressing the button*/
 int start_delay;
 int anti_bouncing_delay;
 
@@ -105,7 +107,7 @@ void show_sequence()
 void generate_sequence()
 {
   if(level < MAX_LEVEL){
-  randomSeed(analogRead(A1)); //in this way is really random!!!
+  randomSeed(analogRead(A1)); //random seed is based on noise on A1
   int numero_sequenza = (int)random(GREEN1,GREEN3+1);
   sequence[level] = numero_sequenza;
   level++;
@@ -174,15 +176,15 @@ void right_sequence()
   score += level;
 }
 
-/*End of the game with a depressing sentence. Waiting phase*/
+/*End of the game. Waiting phase*/
 void wrong_sequence()
 {
-  Serial.print("Game over, you lost at a very simple game!-Score: ");
+  Serial.print("Game over!-Score: ");
   Serial.println(score * game_speed);
   reset_game();
 }
 
-/*End of the game with a nice sentence. Waiting phase*/
+/*End of the game. Waiting phase*/
 void you_win()
 {
   Serial.print("You win, nobody has a good memory like yours!-Score: ");
@@ -199,7 +201,7 @@ void you_win()
 
 }
 
-/*Enables the game to be restarted*/
+/*Enables the game to be restarted by pressing the first button*/
 void reset_game()
 {
   score = 0;
@@ -214,7 +216,7 @@ void reset_game()
   attachInterrupt(digitalPinToInterrupt(BUTTON1), start_game, HIGH);
 }
 
-/*Obviusly turns the leds off*/
+/*Turns green leds off*/
 void turn_leds_off()
 {
   digitalWrite(GREEN1, LOW);
