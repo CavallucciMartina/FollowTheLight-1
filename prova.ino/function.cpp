@@ -59,7 +59,7 @@ void init_variables() {
 
   game_over_timer = 5000;
   dt_gameover = 2000;
-  start_delay = 1000;
+  start_delay = 250;
   anti_bouncing_delay = 200;
   pulse_delay = 50;
 }
@@ -85,7 +85,6 @@ void start_game()
     game_over = false;
     game_speed = map(analogRead(POTENTIOMETER),0,1023,1,10);
     Serial.println("Ready!");
-    delay(start_delay);
 }
 
 /*Show the sequence turning on and off the three green leds*/
@@ -119,6 +118,8 @@ void generate_sequence()
 /*Ask the player to push the right button to guess the sequence*/
 void get_sequence()
 {
+
+  delay(start_delay);
   bool waiting = false;
   unsigned long initial_time = millis();
 
@@ -138,7 +139,7 @@ void get_sequence()
         }
       }
       //Check if time is over
-      if (millis() - initial_time >= game_over_timer / (game_speed/2) * level)
+      if (millis() - initial_time >= game_over_timer / (game_speed/3) * level)
       {
           wrong_sequence();
           return;

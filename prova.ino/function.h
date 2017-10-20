@@ -11,7 +11,7 @@
 #define POTENTIOMETER A0
 #define MAX_BRIGHTNESS 255
 #define MIN_BRIGHTNESS 0
-#define MAX_LEVEL 5
+#define MAX_LEVEL 100
 #define NUMBER_OF_LEDS 3
 
 
