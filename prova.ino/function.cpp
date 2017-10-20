@@ -20,6 +20,7 @@ int dt_gameover;
 /*Delay after pressing the button*/
 int start_delay;
 int anti_bouncing_delay;
+int pulse_delay;
 
 /*Used to avoid phase being a global variable*/
 int get_phase() {
@@ -60,6 +61,7 @@ void init_variables() {
   dt_gameover = 2000;
   start_delay = 1000;
   anti_bouncing_delay = 200;
+  pulse_delay = 50;
 }
 
 /*REDLED is pulsing*/
@@ -71,7 +73,7 @@ void pulse_step()
  {
    fade_amount =- fade_amount;
  }
- delay(PULSE_DELAY);
+ delay(pulse_delay);
 }
 
 /*Start game, going from waiting phase to game phase*/
@@ -220,3 +222,9 @@ void turn_leds_off()
   digitalWrite(GREEN2, LOW);
   digitalWrite(GREEN3, LOW);
 }
+
+void change_fade_amount() {
+  game_speed = map(analogRead(POTENTIOMETER),0,1023,1,10);
+  pulse_delay = 50 / game_speed;
+}
+

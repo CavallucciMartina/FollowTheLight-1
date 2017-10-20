@@ -11,7 +11,6 @@
 #define POTENTIOMETER A0
 #define MAX_BRIGHTNESS 255
 #define MIN_BRIGHTNESS 0
-#define PULSE_DELAY 50
 #define MAX_LEVEL 5
 #define NUMBER_OF_LEDS 3
 
@@ -65,5 +64,8 @@ void turn_leds_off();
 
 /*Turns on the three leds, with a delay in-between*/
 void win_animation();
+
+/*Show game speed based on potentiometer*/
+void change_fade_amount();
 
 #endif

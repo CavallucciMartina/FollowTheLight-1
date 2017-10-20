@@ -15,6 +15,7 @@ void loop() {
   switch (get_phase())
   {
     case 0:                 /*Waiting phase*/
+      change_fade_amount();
       pulse_step();
       break;
     case 1:                 /*Gaming phase*/
