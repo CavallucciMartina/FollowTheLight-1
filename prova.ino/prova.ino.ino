@@ -17,20 +17,9 @@ void setup()
 
   Serial.begin(9600);
 
-  phase = 0;
-  brightness = 0;
-  fade_amount = 5;
-  level = 0;
-  score=0;
-  game_speed = 1;
-  base_speed = 500;
+  init_variables();
 
-  game_over_timer = 5000;
-  dt_gameover = 2000;
-  start_delay = 1000;
-  anti_bouncing_delay = 250;
-  
-  attachInterrupt(digitalPinToInterrupt(BUTTON1), startGame, HIGH);
+  attachInterrupt(digitalPinToInterrupt(BUTTON1), start_game, HIGH);
   Serial.println("Welcome to Follow the Light!");
 }
 
@@ -38,7 +27,7 @@ void loop() {
   switch (phase)
   {
     case 0:                 /*Waiting phase*/
-      pulseStep();
+      pulse_step();
       break;
     case 1:                 /*Gaming phase*/
       generate_sequence();

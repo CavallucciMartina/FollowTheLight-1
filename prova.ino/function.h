@@ -18,30 +18,17 @@
 
 #include "Arduino.h"
 
-/*Red led's information*/
-extern int brightness;
-extern int fade_amount;
 /*Game information*/
 extern int phase;
-extern int sequence[MAX_LEVEL];
-extern int level;
-extern bool game_over;
-extern int score;
-extern int game_speed;
-extern int wrong_sequence_flag;
-extern int base_speed;
-//Time to complete the level, it should be multiplied by level to have more time for longer levels
-extern long game_over_timer;
 
-extern int dt_gameover;
-extern int start_delay;
-extern int anti_bouncing_delay;
+/*Initialization of game variables*/
+void init_variables();
 
 /*REDLED is pulsing*/
-void pulseStep();
+void pulse_step();
 
 /*Start game, going from waiting phase to game phase*/
-void startGame();
+void start_game();
 
 /*Show the sequence turning on and off the three green leds*/
 void show_sequence();

@@ -19,8 +19,24 @@ int dt_gameover;
 int start_delay;
 int anti_bouncing_delay;
 
+void init_variables() {
+  phase = 0;
+  brightness = 0;
+  fade_amount = 5;
+  level = 0;
+  score=0;
+  game_speed = 1;
+  base_speed = 500;
+
+  game_over_timer = 5000;
+  dt_gameover = 2000;
+  start_delay = 1000;
+  anti_bouncing_delay = 250;
+  
+}
+
 /*REDLED is pulsing*/
-void pulseStep()
+void pulse_step()
 {
  analogWrite(REDLED, brightness);
  brightness += fade_amount;
@@ -32,7 +48,7 @@ void pulseStep()
 }
 
 /*Start game, going from waiting phase to game phase*/
-void startGame()
+void start_game()
 {
     detachInterrupt(digitalPinToInterrupt(BUTTON1));
     phase = 1;
@@ -169,7 +185,7 @@ void reset_game()
   delay(dt_gameover);
   analogWrite(REDLED, MIN_BRIGHTNESS);
   EIFR = 0x01;
-  attachInterrupt(digitalPinToInterrupt(BUTTON1), startGame, HIGH);
+  attachInterrupt(digitalPinToInterrupt(BUTTON1), start_game, HIGH);
 }
 
 /*Obviusly turns the leds off*/
