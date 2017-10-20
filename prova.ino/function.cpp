@@ -131,21 +131,18 @@ void get_sequence()
     {
       for(int j = 0; j < NUMBER_OF_LEDS; j++) {
         if (digitalRead(BUTTON1 + j) == HIGH) {
+          //right button
           if (led_guess(GREEN1 + j, i) == false) {
             return;
+          } else { //wrong button
+            delay(anti_bouncing_delay);
           }
-          waiting = true;
         }
-    }
-    if(waiting)
-      {
-        delay(anti_bouncing_delay);
-        waiting = false;
       }
       if (millis() - initial_time >= game_over_timer * level)
       {
-        wrong_sequence();
-        return;
+          wrong_sequence();
+          return;
       }
     }
   }
