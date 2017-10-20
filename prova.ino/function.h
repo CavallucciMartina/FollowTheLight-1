@@ -18,9 +18,14 @@
 
 #include "Arduino.h"
 
+/*Used to avoid phase being a global variable*/
 int get_phase();
 
+/*Used to avoid phase being a global variable*/
 void set_phase(int new_phase);
+
+/*Setting pin mode and base values*/
+void init_hardware();
 
 /*Initialization of game variables*/
 void init_variables();

@@ -2,19 +2,7 @@
 
 void setup()
 {
-  //Pin mode
-  pinMode(REDLED, OUTPUT);
-  pinMode(GREEN1, OUTPUT);
-  pinMode(GREEN2, OUTPUT);
-  pinMode(GREEN3, OUTPUT);
-  
-  turn_leds_off();
-
-  pinMode(POTENTIOMETER, INPUT);
-  pinMode(BUTTON1,INPUT);
-  pinMode(BUTTON2,INPUT);
-  pinMode(BUTTON3,INPUT);
-
+  init_hardware();
   Serial.begin(9600);
 
   init_variables();

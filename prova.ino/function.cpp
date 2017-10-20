@@ -29,6 +29,22 @@ void set_phase(int new_phase) {
   phase = new_phase;
 }
 
+/*Setting pin mode and base values*/
+void init_hardware() {
+  pinMode(REDLED, OUTPUT);
+  pinMode(GREEN1, OUTPUT);
+  pinMode(GREEN2, OUTPUT);
+  pinMode(GREEN3, OUTPUT);
+  
+  turn_leds_off();
+
+  pinMode(POTENTIOMETER, INPUT);
+  pinMode(BUTTON1,INPUT);
+  pinMode(BUTTON2,INPUT);
+  pinMode(BUTTON3,INPUT);
+
+}
+
 void init_variables() {
   set_phase(0);
   brightness = 0;
