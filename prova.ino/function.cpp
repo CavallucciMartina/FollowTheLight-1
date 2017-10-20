@@ -139,7 +139,7 @@ void get_sequence()
           }
         }
       }
-      if (millis() - initial_time >= game_over_timer * level)
+      if (millis() - initial_time >= game_over_timer / (game_speed/2) * level)
       {
           wrong_sequence();
           return;
