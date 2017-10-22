@@ -1,0 +1,13 @@
+\documentclass[a4paper]{article}
+\begin{document}
+	\begin{center}{\Huge \centering  Follow the light }
+			\end{center}
+	{\fontsize{10}{12} Martina Cavallucci  765565\newline Matteo Magnini      731659\newline Shapour Nemati\newline
+		 Alfredo Tonelli}
+	
+	\paragraph{}
+	Nel nostro gioco abbiamo deciso di adottare una soluzione di tipo ad Interrupt per la gestione del bottone di inizio del gioco. Percio' mentre il Led Flash pulsa e viene premuto il primo tasto si scatena un interrupt che fa realmente partire il gioco.
+	Invece per la gestione del controllo della giusta sequenza digitata l'approcio è tipo polling infatti dentro al super loop controlliamo con uno switch quali tasti siano stati premuti in base alla sequenza che memorizziamo in un vettore(di massima dimensione impostata a  100 elementi).
+	Inoltre per una migliore esperienza di gioco abbiamo deciso che una volta digitata la sequenza sbagliata, viene scritto sulla seriale "Game over" e il Led Flash rimane acceso per 2 secondi poi rincomincia la sua funzione di pulse; se invece il gioco viene completato vengono accesi in sequenza tutti i led e il Led Flash rimane acceso per DT--- secondi.
+
+\end{document}
