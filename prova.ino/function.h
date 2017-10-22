@@ -13,6 +13,12 @@
 #define MIN_BRIGHTNESS 0
 #define MAX_LEVEL 100
 #define NUMBER_OF_LEDS 3
+#define TIME_SPEED_FACTOR 3
+#define PULSE_FACTOR 51
+#define MAX_VELOCITY 10
+#define MIN_VELOCITY 1
+#define MIN_POTENTIOMETER_VALUE 0
+#define MAX_POTENTIOMETER_VALUE 1023
 
 
 #include "Arduino.h"

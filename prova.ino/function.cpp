@@ -83,7 +83,7 @@ void start_game()
     set_phase(1);
     analogWrite(REDLED,0);
     game_over = false;
-    game_speed = map(analogRead(POTENTIOMETER),0,1023,1,10);
+    game_speed = map(analogRead(POTENTIOMETER),MIN_POTENTIOMETER_VALUE,MAX_POTENTIOMETER_VALUE,MIN_VELOCITY,MAX_VELOCITY);
     Serial.println("Ready!");
 }
 
@@ -139,7 +139,7 @@ void get_sequence()
         }
       }
       //Check if time is over
-      if (millis() - initial_time >= game_over_timer / (game_speed/3) * level)
+      if (millis() - initial_time >= (game_over_timer / game_speed) * level * TIME_SPEED_FACTOR)
       {
           wrong_sequence();
           return;
@@ -225,7 +225,7 @@ void turn_leds_off()
 }
 
 void change_fade_amount() {
-  game_speed = map(analogRead(POTENTIOMETER),0,1023,1,10);
-  pulse_delay = base_speed / game_speed / 51;
+  game_speed = map(analogRead(POTENTIOMETER),MIN_POTENTIOMETER_VALUE,MAX_POTENTIOMETER_VALUE,MIN_VELOCITY,MAX_VELOCITY);
+  pulse_delay = base_speed / game_speed / PULSE_FACTOR;
 }
 
